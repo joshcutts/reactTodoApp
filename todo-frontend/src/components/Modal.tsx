@@ -12,7 +12,7 @@ const Title = ({ title, setTitle }) => {
   return (
     <li>
       <label htmlFor="title">Title</label>
-      <input type="text" name="title" id="title" placeholder={title || "Item Name"} onChange={handleTitle}/>
+      <input type="text" name="title" id="title" placeholder={"Item Name"} value={title || ""} onChange={handleTitle}/>
     </li>
   )
 }
