@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FormattedTodo, ModalProps, AcutalModalProps, ModalFormProps } from '../types'
-import axios from 'axios'
-import { formatDate } from '../utilities/utilties'
-
+import { FormattedTodo } from '../types'
 
 const Title = ({ title, setTitle }) => {
   const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
