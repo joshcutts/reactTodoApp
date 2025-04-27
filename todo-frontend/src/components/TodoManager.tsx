@@ -31,7 +31,8 @@ const TodoManager = ({
         <Modal
           displayModal={displayModal}
           handleDisplayModal={handleDisplayModal}
-          todo={todo} handleSubmit={onSubmit}
+          todo={todo} 
+          handleSubmit={onSubmit}
           onComplete={onComplete}/>
       </main>
     </div>

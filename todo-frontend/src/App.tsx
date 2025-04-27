@@ -103,16 +103,14 @@ function App() {
     }
   }
 
-  const onSubmit: OnSubmitProps = (event, newTodo, resetForm): void => {
+  const onSubmit: OnSubmitProps = (event, newTodo): void => {
     event.preventDefault()
 
     if (todoExists(newTodo, todos)) {
       handleEdit(newTodo)
-      resetForm()
       setDisplayModal(!displayModal)
     } else {
       handleCreate(newTodo)
-      resetForm()
       setDisplayModal(!displayModal)
     }
   }

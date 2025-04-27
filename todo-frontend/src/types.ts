@@ -58,7 +58,6 @@ export interface TitleObjProps {
 export type OnSubmitProps = (
   event: React.FormEvent<HTMLFormElement>,
   newTodo: Todo,
-  resetForm: () => void,
 ) => void
 
 export interface SidebarProps {
@@ -115,4 +114,20 @@ interface TitleInfoProps {
 export interface TitleProps {
   titleInfo: TitleInfoProps;
   toggleSidebar: () => void;
+}
+
+export interface DateParts {
+  year: string;
+  month: string;
+  day: string;
+}
+
+export type TodoField = 'title' | 'description' | 'date' | 'year' | 'month' | 'day' | 'description'
+
+export interface ModalProps {
+  displayModal: boolean;
+  handleDisplayModal: React.MouseEventHandler<HTMLLabelElement>;
+  todo: FormattedTodo;
+  handleSubmit: OnSubmitProps;
+  onComplete: (id: number) => Promise<void>;
 }

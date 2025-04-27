@@ -1,32 +1,33 @@
-import { useState, useEffect } from 'react'
-import { FormattedTodo } from '../types'
+import { useState } from 'react'
+import { FormattedTodo, DateParts, TodoField, ModalProps } from '../types'
 
-const Title = ({ title, setTitle }) => {
-  const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value)
+const Title = ({ title, onChange }: {title: string, onChange: (name: string, value: string) => void}) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onChange('title', event.target.value)
   }
 
   return (
     <li>
       <label htmlFor="title">Title</label>
-      <input type="text" name="title" id="title" placeholder={"Item Name"} value={title || ""} onChange={handleTitle}/>
+      <input type="text" name="title" id="title" placeholder={"Item Name"} value={title || ""} onChange={handleChange}/>
     </li>
   )
 }
 
-const DueDate = ({ day, setDay, month, setMonth, year, setYear }) => {
-  const handleChange= (
+const DueDate = ({ date, onChange }: {date: DateParts, onChange: (name: string, value: DateParts) => void}) => {
+  const handleChange = (
+    dateField: string,
     event: React.ChangeEvent<HTMLSelectElement>, 
-    setState: React.Dispatch<React.SetStateAction<string>>
   ) => {
-    setState(event.target.value)
+    const newDate = {...date, [dateField]: event.target.value}
+    onChange('date', newDate)
   }
 
   return (
     <li>
       <label htmlFor="due">Due Date</label>
       <div className="date">
-        <select id="due_day" name="due_day" value={day} onChange={(event) => handleChange(event, setDay)}>
+        <select id="due_day" name="due_day" value={date.day} onChange={(event) => handleChange('day', event)}>
           <option value="">Day</option>
           <option value="01">1</option>
           <option value="02">2</option>
@@ -60,7 +61,7 @@ const DueDate = ({ day, setDay, month, setMonth, year, setYear }) => {
           <option value="30">30</option>
           <option value="31">31</option>
         </select>  /
-        <select id="due_month" name="due_month" value={month} onChange={(event) => handleChange(event, setMonth)}>
+        <select id="due_month" name="due_month" value={date.month} onChange={(event) => handleChange('month', event)}>
           <option value="">Month</option>
           <option value="01">January</option>
           <option value="02">February</option>
@@ -75,7 +76,7 @@ const DueDate = ({ day, setDay, month, setMonth, year, setYear }) => {
           <option value="11">November</option>
           <option value="12">December</option>
         </select> /
-        <select id="due_year" name="due_year" value={year} onChange={(event) => handleChange(event, setYear)}>
+        <select id="due_year" name="due_year" value={date.year} onChange={(event) => handleChange('year', event)}>
           <option value="">Year</option>
           <option>2014</option>
           <option>2015</option>
@@ -95,9 +96,9 @@ const DueDate = ({ day, setDay, month, setMonth, year, setYear }) => {
   )
 }
 
-const Description = ({ description, setDescription }: {setDescription: React.Dispatch<React.SetStateAction<string>>}) => {
-  const handleDescription = (event:React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(event.target.value)
+const Description = ({ description, onChange }: {description: string, onChange: (field: string, value: string) => void}) => {
+  const handleDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    onChange('description', event.target.value)
   }
 
   return (
@@ -109,40 +110,16 @@ const Description = ({ description, setDescription }: {setDescription: React.Dis
 }
 
 const ModalForm = ({ handleSubmit, todo, onComplete }) => {
-  const [title, setTitle] = useState('')
-  const [day, setDay] = useState('')
-  const [month, setMonth] = useState('')
-  const [year, setYear] = useState('')
-  const [description, setDescription] = useState('')
+  const [newTodo, setNewTodo] = useState({...todo})
+  const date: DateParts = {'year': newTodo.year, 'month': newTodo.month, 'day': newTodo.day}
 
-  useEffect(() => {
-    if (todo) {
-      setTitle(todo.title || '')
-      setDay(todo.day || '')
-      setMonth(todo.month || '')
-      setYear(todo.year || '')
-      setDescription(todo.description || '')
+  const handleChange = (property: TodoField, value: string | DateParts): void => {
+    if (property === "date") {
+      const dateValue = value as DateParts
+      setNewTodo({...newTodo, 'year': dateValue.year, 'month': dateValue.month, 'day': dateValue.day})
     } else {
-      resetForm()
+      setNewTodo({...newTodo, [property]: value})
     }
-  }, [todo])
-  
-  const resetForm = () => {
-    setTitle('')
-    setDay('')
-    setMonth('')
-    setYear('')
-    setDescription('')
-  }
-
-  const newTodo = {
-    title,
-    day,
-    month,
-    year,
-    description,
-    completed: false,
-    id: todo?.id || '',
   }
 
   const onClick = (event, id) => {
@@ -151,23 +128,30 @@ const ModalForm = ({ handleSubmit, todo, onComplete }) => {
   }
 
   return (
-    <form action="" method="post" onSubmit={(event) => handleSubmit(event, newTodo, resetForm)}>
-            <fieldset>
-              <ul>
-                <Title title={title} setTitle={setTitle} />
-                <DueDate day={day} setDay={setDay} month={month} setMonth={setMonth} year={year} setYear={setYear} />
-                <Description description={description} setDescription={setDescription}/>
-                <li>
-                  <input type="submit" value="Save" />
-                  <button name="complete" onClick={(e) => onClick(e, newTodo.id)}>Mark As Complete</button>
-                </li>
-              </ul>
-            </fieldset>
-          </form>
+    <div className="modal" id="form_modal" style={{top: (window.scrollY + 200) + 'px'}}>
+      <form action="" method="post" onSubmit={(event) => handleSubmit(event, newTodo)}>
+      <fieldset>
+        <ul>
+          <Title title={newTodo.title} onChange={handleChange}/>
+          <DueDate date={date} onChange={handleChange}/>
+          <Description description={newTodo.description} onChange={handleChange}/>
+          <li>
+            <input type="submit" value="Save" />
+            <button name="complete" onClick={(e) => onClick(e, newTodo.id)}>Mark As Complete</button>
+          </li>
+        </ul>
+      </fieldset>
+    </form>
+    </div>
   )
 }
 
-const Modal = ({displayModal, handleDisplayModal, todo, handleSubmit, onComplete }: {displayModal: boolean, todo: FormattedTodo | null} ) => {
+const Modal = ({
+  displayModal,
+  handleDisplayModal,
+  todo,
+  handleSubmit,
+  onComplete }: ModalProps ) => {
   if (!displayModal) return null
 
   return (
