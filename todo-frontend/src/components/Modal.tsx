@@ -1,15 +1,36 @@
 import { useState } from 'react'
-import { FormattedTodo, DateParts, TodoField, ModalProps } from '../types'
+import { DateParts, TodoField, ModalProps } from '../types'
 
 const Title = ({ title, onChange }: {title: string, onChange: (name: string, value: string) => void}) => {
+  const [localError, setLocalError] = useState<string | null>(null)
+  const [touched, setTouched] = useState(false)
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onChange('title', event.target.value)
+    const title = event.target.value
+    onChange('title', title)
+
+    if (touched) {
+      if (title.trim().length < 3) {
+        setLocalError('Title must be at least 3 characters long.')
+      } else {
+        setLocalError(null)
+      }
+    }
+  }
+
+  const handleBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
+    title = event.target.value
+    setTouched(true)
+    if (title.trim().length < 3) setLocalError('Title must be at least 3 characters long.')
   }
 
   return (
     <li>
       <label htmlFor="title">Title</label>
-      <input type="text" name="title" id="title" placeholder={"Item Name"} value={title || ""} onChange={handleChange}/>
+      <div className="input-wrapper">
+        <input type="text" name="title" id="title" placeholder={"Item Name"} value={title || ""} onChange={handleChange} onBlur={handleBlur}/>
+        {touched && localError && <div className="error">{localError}</div>}
+      </div>
     </li>
   )
 }
@@ -109,7 +130,7 @@ const Description = ({ description, onChange }: {description: string, onChange: 
   )
 }
 
-const ModalForm = ({ onSubmit, todo, onComplete }) => {
+const ModalForm = ({ onSubmit, todo, handleComplete }) => {
   const [newTodo, setNewTodo] = useState({...todo})
   const date: DateParts = {'year': newTodo.year, 'month': newTodo.month, 'day': newTodo.day}
 
@@ -124,7 +145,7 @@ const ModalForm = ({ onSubmit, todo, onComplete }) => {
 
   const onClick = (event, id) => {
     event.preventDefault()
-    onComplete(id)
+    handleComplete(id)
   }
 
   return (
@@ -150,15 +171,15 @@ const Modal = ({
   displayModal,
   onClose,
   todo,
-  handleSubmit,
-  onComplete }: ModalProps ) => {
+  onSubmit,
+  handleComplete }: ModalProps ) => {
   if (!displayModal) return null
 
   return (
     <>
       <div className="modal" id="modal_layer" onClick={onClose}></div>
       <div className="modal" id="form_modal" style={{top: (window.scrollY + 200) + 'px'}}>
-        <ModalForm onSubmit={handleSubmit} todo={todo} onComplete={onComplete}/>      
+        <ModalForm onSubmit={onSubmit} todo={todo} handleComplete={handleComplete}/>      
       </div>
     </>
   )

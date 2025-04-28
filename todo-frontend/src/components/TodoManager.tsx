@@ -65,8 +65,9 @@ const TodoManager = ({
       setDisplayModal(false)
     }
 
-    const onSubmit: OnSubmitProps = (event, newTodo): void => {
+    const handleSubmit: OnSubmitProps = (event, newTodo): void => {
       event.preventDefault()
+      if (newTodo.title.trim().length < 3) return
   
       if (todoExists(newTodo, todos)) {
         handleEdit(newTodo)
@@ -104,8 +105,8 @@ const TodoManager = ({
           displayModal={displayModal}
           onClose={handleModalClose}
           todo={todo} 
-          handleSubmit={onSubmit}
-          onComplete={handleComplete}/>
+          onSubmit={handleSubmit}
+          handleComplete={handleComplete}/>
       </main>
     </div>
   )
