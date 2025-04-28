@@ -38,7 +38,6 @@ function App() {
     const filteredTodos = filterTodosOnSelection(completed, date, todos)
     const sortedTodos = sortByCompleted(filteredTodos)
 
-
     setSelectedTodos(sortedTodos)
 
     const title = getTitle(currentSelection)

@@ -47,6 +47,7 @@ const TodoManager = ({
       const newFormattedTodo = await addTodo(newTodo)
       setTodos(todos.concat(newFormattedTodo))
       resetSelection()
+      setDisplayModal(false)
     }
   
     const handleEdit = async (newTodo: Todo) => {
@@ -54,6 +55,7 @@ const TodoManager = ({
       updatedTodo = {...updatedTodo, dueDate: formatDate(newTodo)}
       const updatedTodos = todos.filter(todo => todo.id !== newTodo.id).concat(updatedTodo)
       setTodos(updatedTodos)
+      setDisplayModal(false)
     }
   
     const handleComplete = async(id: number) => {
@@ -68,10 +70,8 @@ const TodoManager = ({
   
       if (todoExists(newTodo, todos)) {
         handleEdit(newTodo)
-        setDisplayModal(false)
       } else {
         handleCreate(newTodo)
-        setDisplayModal(false)
       }
     }
 
