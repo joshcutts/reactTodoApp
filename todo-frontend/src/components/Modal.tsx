@@ -109,7 +109,7 @@ const Description = ({ description, onChange }: {description: string, onChange: 
   )
 }
 
-const ModalForm = ({ handleSubmit, todo, onComplete }) => {
+const ModalForm = ({ onSubmit, todo, onComplete }) => {
   const [newTodo, setNewTodo] = useState({...todo})
   const date: DateParts = {'year': newTodo.year, 'month': newTodo.month, 'day': newTodo.day}
 
@@ -129,7 +129,7 @@ const ModalForm = ({ handleSubmit, todo, onComplete }) => {
 
   return (
     <div className="modal" id="form_modal" style={{top: (window.scrollY + 200) + 'px'}}>
-      <form action="" method="post" onSubmit={(event) => handleSubmit(event, newTodo)}>
+      <form action="" method="post" onSubmit={(event) => onSubmit(event, newTodo)}>
       <fieldset>
         <ul>
           <Title title={newTodo.title} onChange={handleChange}/>
@@ -148,7 +148,7 @@ const ModalForm = ({ handleSubmit, todo, onComplete }) => {
 
 const Modal = ({
   displayModal,
-  handleDisplayModal,
+  onClose,
   todo,
   handleSubmit,
   onComplete }: ModalProps ) => {
@@ -156,9 +156,9 @@ const Modal = ({
 
   return (
     <>
-      <div className="modal" id="modal_layer" onClick={handleDisplayModal}></div>
+      <div className="modal" id="modal_layer" onClick={onClose}></div>
       <div className="modal" id="form_modal" style={{top: (window.scrollY + 200) + 'px'}}>
-        <ModalForm handleSubmit={handleSubmit} todo={todo} onComplete={onComplete}/>      
+        <ModalForm onSubmit={handleSubmit} todo={todo} onComplete={onComplete}/>      
       </div>
     </>
   )

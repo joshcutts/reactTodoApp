@@ -12,7 +12,8 @@ const TodoItem = ({
     }
   }
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = (event: React.SyntheticEvent) => {
+    event.stopPropagation()
     onDelete(todo.id)
   }
 
@@ -28,7 +29,7 @@ const TodoItem = ({
       <input type="checkbox" name={`item_${todo.id}`} id={`item_${todo.id}`} checked={todo.completed} readOnly/>
       <span className="check"></span>
       <label htmlFor={`item_${todo.id}`} onClick={handleViewClick}>{todo.title} - {todo.dueDate}</label></td> 
-      <td className="delete" onClick={handleDeleteClick}><img src="images/trash.png" alt="Delete"/></td>
+      <td className="delete" onClick={event => handleDeleteClick(event)}><img src="images/trash.png" alt="Delete"/></td>
     </tr>
     </>
   )

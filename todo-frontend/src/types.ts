@@ -16,23 +16,9 @@ export interface FormattedTodo {
   description?: string;
 }
 
-export interface ModalProps {
-  displayModal: boolean;
-  handleDisplayModal: React.MouseEventHandler<HTMLLabelElement>;
-  setTodos: React.Dispatch<React.SetStateAction<FormattedTodo[]>>;
-  todos: FormattedTodo[]
-}
-
 export interface Style {
   display: string,
   top?: string
-}
-
-export interface AcutalModalProps {
-  handleDisplayModal: React.MouseEventHandler<HTMLLabelElement>;
-  setTodos: React.Dispatch<React.SetStateAction<FormattedTodo[]>>;
-  todos: FormattedTodo[];
-  style: Style;
 }
 
 export interface ModalFormProps {
@@ -67,17 +53,11 @@ export interface SidebarProps {
 }
 
 export interface TodoManagerProps {
-  todos: FormattedTodo[],
-  onToggleCompleted: (id: number) => Promise<void>,
-  onDelete: (id: number) => Promise<void>,
-  titleInfo: TitleObjProps,
-  onComplete: (id: number) => Promise<void>,
-  handleDisplayModal: () => void,
-  onView: (id: number) => void,
-  displayModal: boolean,
-  todo: FormattedTodo | null,
-  onSubmit: OnSubmitProps,
-  toggleSidebar: () => void
+  todos: FormattedTodo[];
+  setTodos: React.Dispatch<React.SetStateAction<FormattedTodo[]>>;
+  onSidebarToggleClick: () => void;
+  titleInfo: TitleObjProps;
+  resetSelection: () => void;
 }
 
 export interface TodoTableProps {
@@ -113,7 +93,7 @@ interface TitleInfoProps {
 
 export interface TitleProps {
   titleInfo: TitleInfoProps;
-  toggleSidebar: () => void;
+  onClick: () => void;
 }
 
 export interface DateParts {
@@ -126,8 +106,8 @@ export type TodoField = 'title' | 'description' | 'date' | 'year' | 'month' | 'd
 
 export interface ModalProps {
   displayModal: boolean;
-  handleDisplayModal: React.MouseEventHandler<HTMLLabelElement>;
-  todo: FormattedTodo;
+  onClose: () => void;
+  todo: FormattedTodo | null;
   handleSubmit: OnSubmitProps;
   onComplete: (id: number) => Promise<void>;
 }
