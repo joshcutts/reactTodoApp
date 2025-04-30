@@ -14,16 +14,9 @@ function App() {
   const [displaySidebar, setDisplaySidebar] = useState(true)
 
   useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        const todos = await getAllTodos()
-        setTodos(todos)
-      } catch (error) {
-        window.alert(`Failed to fetch todos ${error}`)
-      }
-    }
-
-    fetchTodos()
+    getAllTodos()
+      .then(todos => setTodos(todos))
+      .catch(error => window.alert(`Failed to fetch todos ${error}`))
   }, [])
 
   const updateSelection = (selection: SelectionProps) => {
