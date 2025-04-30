@@ -48,7 +48,7 @@ export type OnSubmitProps = (
 
 export interface SidebarProps {
   todos: FormattedTodo[];
-  updateSelection: (selection: SelectionProps) => void;
+  onSelect: (selection: SelectionProps) => void;
   currentSelection: SelectionProps
 }
 
@@ -79,7 +79,7 @@ export interface SidebarTodoGroupProps {
   todos: FormattedTodo[];
   isCompletedView: boolean;
   currentSelection: SelectionProps;
-  updateSelection: (selection: SelectionProps) => void
+  onSelect: (selection: SelectionProps) => void
 }
 
 export interface dateKeyTodosProps {

@@ -19,7 +19,7 @@ function App() {
       .catch(error => window.alert(`Failed to fetch todos ${error}`))
   }, [])
 
-  const updateSelection = (selection: SelectionProps) => {
+  const handleSelect = (selection: SelectionProps) => {
     setCurrentSelection(selection)
   }
 
@@ -41,7 +41,7 @@ function App() {
     <>
       {displaySidebar && <Sidebar
         todos={todos}
-        updateSelection={updateSelection}
+        onSelect={handleSelect}
         currentSelection={currentSelection}
       />}
       <TodoManager
