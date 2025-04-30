@@ -6,15 +6,12 @@ import { FormattedTodo, SelectionProps, TitleObjProps } from './types'
 import Sidebar from './components/Sidebar'
 import TodoManager from './components/TodoManager'
 import { getAllTodos } from './todoService'
-import { filterTodosOnSelection, sortByCompleted, getTitle } from './utilities/utilties'
+import { generateSortedSelectedTodos, getTitle } from './utilities/utilties'
 
 function App() {
   const [todos, setTodos] = useState<FormattedTodo[]>([]);
   const [currentSelection, setCurrentSelection] = useState<SelectionProps>({completed: false, date: null})
-  const [selectedTodos, setSelectedTodos] = useState<FormattedTodo[]>([])
   const [displaySidebar, setDisplaySidebar] = useState(true)
-  const [titleInfo, setTitleInfo] = useState<TitleObjProps>({title: '', numberTodos: 0})
-
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -33,16 +30,11 @@ function App() {
     setCurrentSelection(selection)
   }
 
-  useEffect(() => {
-    const {completed, date} = currentSelection
-    const filteredTodos = filterTodosOnSelection(completed, date, todos)
-    const sortedTodos = sortByCompleted(filteredTodos)
-
-    setSelectedTodos(sortedTodos)
-
-    const title = getTitle(currentSelection)
-    setTitleInfo({title, numberTodos: sortedTodos.length})
-  }, [todos, currentSelection])
+  const sortedSelectedTodos = generateSortedSelectedTodos(currentSelection, todos)
+  const title = {
+    title: getTitle(currentSelection),
+    numberTodos: sortedSelectedTodos.length,
+  }
 
   const hangleToggleSidebar = () => {
     setDisplaySidebar(!displaySidebar)
@@ -60,10 +52,10 @@ function App() {
         currentSelection={currentSelection}
       />}
       <TodoManager
-        todos={selectedTodos}
+        todos={sortedSelectedTodos}
         setTodos={setTodos}
         onSidebarToggleClick={hangleToggleSidebar}
-        titleInfo={titleInfo}
+        titleInfo={title}
         resetSelection={resetSelection}
       />
     </>

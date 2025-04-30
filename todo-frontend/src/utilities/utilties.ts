@@ -93,6 +93,13 @@ const sortByCompleted = (todos: FormattedTodo[]) => {
   return incompleteTodos.concat(completedTodos)
 }
 
+const generateSortedSelectedTodos = (currentSelection: SelectionProps, todos: FormattedTodo[]) => {
+  const {completed, date} = currentSelection
+  const filteredTodos = filterTodosOnSelection(completed, date, todos)
+  const sortedTodos = sortByCompleted(filteredTodos)
+  return sortedTodos
+}
+
 const getTitle = ({ completed, date }: { completed: boolean, date: string | null }) => {
   if (date) {
     return date;
@@ -103,4 +110,4 @@ const getTitle = ({ completed, date }: { completed: boolean, date: string | null
   }
 }
 
-export { formatTodos, formatDate, todoExists, generateDateKeyTodos, isCurrentSelection, filterTodosOnSelection, sortByCompleted, getTitle }
+export { formatTodos, formatDate, todoExists, generateDateKeyTodos, isCurrentSelection, generateSortedSelectedTodos, getTitle }
