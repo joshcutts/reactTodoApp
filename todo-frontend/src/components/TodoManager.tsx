@@ -95,7 +95,7 @@ const TodoManager = ({
       <header></header>
       <main>
         <Title titleInfo={titleInfo} onClick={onSidebarToggleClick}/>
-        <AddNewTodoBtn handleClick={handleNewTodoModal}/>
+        <AddNewTodoBtn onClick={handleNewTodoModal}/>
         <TodoTable
           todos={todos}
           onView={onView}

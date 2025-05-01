@@ -1,6 +1,6 @@
-const AddNewTodoBtn = ({ handleClick }: {handleClick: () => void}) => {  
+const AddNewTodoBtn = ({ onClick }: {onClick: () => void}) => {  
   return (
-    <label htmlFor="new_item" onClick={handleClick}>
+    <label htmlFor="new_item" onClick={onClick}>
       <img src="./images/plus.png" alt="Add Todo Item" />
       <h2>Add new to do</h2>
     </label>
