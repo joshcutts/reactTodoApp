@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { DateParts, TodoField, ModalProps } from '../types'
+import { DateParts, TodoField, ModalProps, ModalFormProps, TitleInputProps, DueDateInputProps } from '../types'
 
-const Title = ({ title, onChange }: {title: string, onChange: (name: string, value: string) => void}) => {
+const Title = ({ title, onChange }: TitleInputProps) => {
   const [localError, setLocalError] = useState<string | null>(null)
   const [touched, setTouched] = useState(false)
 
@@ -35,7 +35,7 @@ const Title = ({ title, onChange }: {title: string, onChange: (name: string, val
   )
 }
 
-const DueDate = ({ date, onChange }: {date: DateParts, onChange: (name: string, value: DateParts) => void}) => {
+const DueDate = ({ date, onChange }: DueDateInputProps) => {
   const handleChange = (
     dateField: string,
     event: React.ChangeEvent<HTMLSelectElement>, 
@@ -117,7 +117,7 @@ const DueDate = ({ date, onChange }: {date: DateParts, onChange: (name: string, 
   )
 }
 
-const Description = ({ description, onChange }: {description: string, onChange: (field: string, value: string) => void}) => {
+const Description = ({ description, onChange }: {description: string | undefined, onChange: (field: string, value: string) => void}) => {
   const handleDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange('description', event.target.value)
   }
@@ -130,7 +130,7 @@ const Description = ({ description, onChange }: {description: string, onChange: 
   )
 }
 
-const ModalForm = ({ onSubmit, todo, handleComplete }) => {
+const ModalForm = ({ onSubmit, todo, onComplete }: ModalFormProps) => {
   const [newTodo, setNewTodo] = useState({...todo})
   const date: DateParts = {'year': newTodo.year, 'month': newTodo.month, 'day': newTodo.day}
 
@@ -145,7 +145,7 @@ const ModalForm = ({ onSubmit, todo, handleComplete }) => {
 
   const onClick = (event, id) => {
     event.preventDefault()
-    handleComplete(id)
+    onComplete(id)
   }
 
   return (
@@ -172,14 +172,14 @@ const Modal = ({
   onClose,
   todo,
   onSubmit,
-  handleComplete }: ModalProps ) => {
+  onComplete }: ModalProps ) => {
   if (!displayModal) return null
 
   return (
     <>
       <div className="modal" id="modal_layer" onClick={onClose}></div>
       <div className="modal" id="form_modal" style={{top: (window.scrollY + 200) + 'px'}}>
-        <ModalForm onSubmit={onSubmit} todo={todo} handleComplete={handleComplete}/>      
+        <ModalForm onSubmit={onSubmit} todo={todo} onComplete={onComplete}/>      
       </div>
     </>
   )

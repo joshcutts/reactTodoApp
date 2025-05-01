@@ -4,18 +4,23 @@ import AddNewTodoBtn from "./AddNewTodoBtn"
 import TodoTable from "./TodoTable"
 import Modal from "./Modal"
 import { Todo, TodoManagerProps, OnSubmitProps, FormattedTodo } from "../types"
-import { formatDate, todoExists } from '../utilities/utilties'
+import { formatDate, todoExists, generateSortedSelectedTodos, getTitle } from '../utilities/utilties'
 import { addTodo, updateTodo, deleteTodo, toggleComplete } from '../todoService'
 
 const TodoManager = ({
   todos,
   setTodos,
   onSidebarToggleClick,
-  titleInfo,
+  currentSelection,
   resetSelection
   }: TodoManagerProps ) => {
     const [todo, setTodo] = useState<FormattedTodo | null>(null)
     const [displayModal, setDisplayModal] = useState<boolean>(false)
+    const sortedSelectedTodos = generateSortedSelectedTodos(currentSelection, todos)
+    const title = {
+      title: getTitle(currentSelection),
+      numberTodos: sortedSelectedTodos.length,
+    }
 
     const handleModalClose = () => {
       setTodo(null)
@@ -51,8 +56,7 @@ const TodoManager = ({
     }
   
     const handleEdit = async (newTodo: Todo) => {
-      let updatedTodo = await updateTodo(newTodo)
-      updatedTodo = {...updatedTodo, dueDate: formatDate(newTodo)}
+      const updatedTodo = await updateTodo(newTodo)
       const updatedTodos = todos.filter(todo => todo.id !== newTodo.id).concat(updatedTodo)
       setTodos(updatedTodos)
       setDisplayModal(false)
@@ -94,10 +98,10 @@ const TodoManager = ({
     <div id="items">
       <header></header>
       <main>
-        <Title titleInfo={titleInfo} onClick={onSidebarToggleClick}/>
+        <Title titleInfo={title} onClick={onSidebarToggleClick}/>
         <AddNewTodoBtn onClick={handleNewTodoModal}/>
         <TodoTable
-          todos={todos}
+          todos={sortedSelectedTodos}
           onView={onView}
           onToggleCompleted={handleToggleCompleted}
           onDelete={handleDelete}/>
@@ -106,7 +110,7 @@ const TodoManager = ({
           onClose={handleModalClose}
           todo={todo} 
           onSubmit={handleSubmit}
-          handleComplete={handleComplete}/>
+          onComplete={handleComplete}/>
       </main>
     </div>
   )

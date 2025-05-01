@@ -2,14 +2,13 @@ import { useState, useEffect } from 'react'
 import './todo_v2.css'
 import './reset.css'
 import './todo.css'
-import { FormattedTodo, SelectionProps, TitleObjProps } from './types'
+import { Todo, SelectionProps, TitleObjProps } from './types'
 import Sidebar from './components/Sidebar'
 import TodoManager from './components/TodoManager'
 import { getAllTodos } from './todoService'
-import { generateSortedSelectedTodos, getTitle } from './utilities/utilties'
 
 function App() {
-  const [todos, setTodos] = useState<FormattedTodo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [currentSelection, setCurrentSelection] = useState<SelectionProps>({completed: false, date: null})
   const [displaySidebar, setDisplaySidebar] = useState(true)
 
@@ -21,12 +20,6 @@ function App() {
 
   const handleSelect = (selection: SelectionProps) => {
     setCurrentSelection(selection)
-  }
-
-  const sortedSelectedTodos = generateSortedSelectedTodos(currentSelection, todos)
-  const title = {
-    title: getTitle(currentSelection),
-    numberTodos: sortedSelectedTodos.length,
   }
 
   const hangleToggleSidebar = () => {
@@ -45,10 +38,10 @@ function App() {
         currentSelection={currentSelection}
       />}
       <TodoManager
-        todos={sortedSelectedTodos}
+        todos={todos}
         setTodos={setTodos}
         onSidebarToggleClick={hangleToggleSidebar}
-        titleInfo={title}
+        currentSelection={currentSelection}
         resetSelection={resetSelection}
       />
     </>

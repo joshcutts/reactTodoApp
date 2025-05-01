@@ -8,27 +8,13 @@ export interface Todo {
   description?: string;
 }
 
-export interface FormattedTodo {
-  id: number;
-  title: string;
-  dueDate: string,
-  completed: boolean;
-  description?: string;
-}
-
 export interface Style {
   display: string,
   top?: string
 }
 
-export interface ModalFormProps {
-  handleDisplayModal: React.MouseEventHandler<HTMLLabelElement>;
-  setTodos: React.Dispatch<React.SetStateAction<FormattedTodo[]>>;
-  todos: FormattedTodo[];
-}
-
 export interface DateKey {
-  [key: string]: FormattedTodo[];
+  [key: string]: Todo[];
 }
 
 export interface SelectionProps {
@@ -47,16 +33,16 @@ export type OnSubmitProps = (
 ) => void
 
 export interface SidebarProps {
-  todos: FormattedTodo[];
+  todos: Todo[];
   onSelect: (selection: SelectionProps) => void;
   currentSelection: SelectionProps
 }
 
 export interface TodoManagerProps {
-  todos: FormattedTodo[];
-  setTodos: React.Dispatch<React.SetStateAction<FormattedTodo[]>>;
+  todos: Todo[];
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   onSidebarToggleClick: () => void;
-  titleInfo: TitleObjProps;
+  currentSelection: SelectionProps;
   resetSelection: () => void;
 }
 
@@ -83,7 +69,7 @@ export interface SidebarTodoGroupProps {
 }
 
 export interface dateKeyTodosProps {
-  [key: string]: FormattedTodo[]
+  [key: string]: Todo[]
 }
 
 interface TitleInfoProps {
@@ -108,6 +94,24 @@ export interface ModalProps {
   displayModal: boolean;
   onClose: () => void;
   todo: FormattedTodo | null;
-  handleSubmit: OnSubmitProps;
+  onSubmit: OnSubmitProps;
   onComplete: (id: number) => Promise<void>;
+}
+
+export interface ModalFormProps {
+  onSubmit: OnSubmitProps;
+  todo: FormattedTodo | null;
+  onComplete: (id: number) => Promise<void>;
+}
+
+type onChangeProp = (property: TodoField, value: string | DateParts) => void
+
+export interface TitleInputProps {
+  title: string | undefined;
+  onChange: onChangeProp
+}
+
+export interface DueDateInputProps {
+  date: DateParts;
+  onChange: onChangeProp;
 }
