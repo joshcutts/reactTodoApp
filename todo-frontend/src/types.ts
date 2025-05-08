@@ -47,14 +47,14 @@ export interface TodoManagerProps {
 }
 
 export interface TodoTableProps {
-  todos: FormattedTodo[],
+  todos: Todo[],
   onView: (id: number) => void,
   onToggleCompleted: (id: number) => Promise<void>,
   onDelete: (id: number) => Promise<void>,
 }
 
 export interface TodoItemProps {
-  todo: FormattedTodo;
+  todo: Todo;
   onView: (id: number) => void,
   onToggleCompleted: (id: number) => Promise<void>,
   onDelete: (id: number) => Promise<void>,
@@ -62,7 +62,7 @@ export interface TodoItemProps {
 
 export interface SidebarTodoGroupProps {
   title: string;
-  todos: FormattedTodo[];
+  todos: Todo[];
   isCompletedView: boolean;
   currentSelection: SelectionProps;
   onSelect: (selection: SelectionProps) => void
@@ -83,24 +83,24 @@ export interface TitleProps {
 }
 
 export interface DateParts {
-  year: string;
-  month: string;
-  day: string;
+  year: string | undefined;
+  month: string | undefined;
+  day: string | undefined;
 }
 
-export type TodoField = 'title' | 'description' | 'date' | 'year' | 'month' | 'day' | 'description'
+export type TodoField = 'title' | 'description' | 'date' | 'year' | 'month' | 'day';
 
 export interface ModalProps {
   displayModal: boolean;
   onClose: () => void;
-  todo: FormattedTodo | null;
+  todo: Todo | null;
   onSubmit: OnSubmitProps;
   onComplete: (id: number) => Promise<void>;
 }
 
 export interface ModalFormProps {
   onSubmit: OnSubmitProps;
-  todo: FormattedTodo | null;
+  todo: Todo | null;
   onComplete: (id: number) => Promise<void>;
 }
 
@@ -108,10 +108,18 @@ type onChangeProp = (property: TodoField, value: string | DateParts) => void
 
 export interface TitleInputProps {
   title: string | undefined;
-  onChange: onChangeProp
+  onChange: onChangeProp;
+  onBlur: () => void;
+  titleError: string | null;
+  titleBlur: boolean;
 }
 
 export interface DueDateInputProps {
   date: DateParts;
   onChange: onChangeProp;
+}
+
+export interface DescriptionInputProps {
+  description: string | undefined;
+  onChange: onChangeProp
 }

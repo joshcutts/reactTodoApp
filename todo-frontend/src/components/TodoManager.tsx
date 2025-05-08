@@ -55,9 +55,9 @@ const TodoManager = ({
       setDisplayModal(false)
     }
   
-    const handleEdit = async (newTodo: Todo) => {
-      const updatedTodo = await updateTodo(newTodo)
-      const updatedTodos = todos.filter(todo => todo.id !== newTodo.id).concat(updatedTodo)
+    const handleEdit = async (draftTodo: Todo) => {
+      const updatedTodo = await updateTodo(draftTodo)
+      const updatedTodos = todos.filter(todo => todo.id !== draftTodo.id).concat(updatedTodo)
       setTodos(updatedTodos)
       setDisplayModal(false)
     }
@@ -69,14 +69,13 @@ const TodoManager = ({
       setDisplayModal(false)
     }
 
-    const handleSubmit: OnSubmitProps = (event, newTodo): void => {
+    const handleSubmit: OnSubmitProps = (event, draftTodo): void => {
       event.preventDefault()
-      if (newTodo.title.trim().length < 3) return
   
-      if (todoExists(newTodo, todos)) {
-        handleEdit(newTodo)
+      if (todoExists(draftTodo.id, todos)) {
+        handleEdit(draftTodo)
       } else {
-        handleCreate(newTodo)
+        handleCreate(draftTodo)
       }
     }
 

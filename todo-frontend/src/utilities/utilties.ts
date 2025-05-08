@@ -18,8 +18,8 @@ const formatTodos = (todos: Todo[]) => {
   })
 }
 
-const todoExists = (todo: Todo, todos: Todo[]) => {
-  return todos.map(todo => todo.id).includes(Number(todo.id))
+const todoExists = (id: number | null, todos: Todo[]) => {
+  return todos.map(todo => todo.id).includes(Number(id))
 }
 
 const sortByDate = (dateKeysObj: dateKeyTodosProps) => {

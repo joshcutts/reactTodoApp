@@ -1,35 +1,18 @@
 import { useState } from 'react'
-import { DateParts, TodoField, ModalProps, ModalFormProps, TitleInputProps, DueDateInputProps } from '../types'
+import { Todo, DateParts, TodoField, ModalProps, ModalFormProps, TitleInputProps, DueDateInputProps, DescriptionInputProps } from '../types'
 
-const Title = ({ title, onChange }: TitleInputProps) => {
-  const [localError, setLocalError] = useState<string | null>(null)
-  const [touched, setTouched] = useState(false)
-
+const Title = ({ title, onChange, onBlur, titleError, titleBlur }: TitleInputProps) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const title = event.target.value
     onChange('title', title)
-
-    if (touched) {
-      if (title.trim().length < 3) {
-        setLocalError('Title must be at least 3 characters long.')
-      } else {
-        setLocalError(null)
-      }
-    }
-  }
-
-  const handleBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
-    title = event.target.value
-    setTouched(true)
-    if (title.trim().length < 3) setLocalError('Title must be at least 3 characters long.')
   }
 
   return (
     <li>
       <label htmlFor="title">Title</label>
       <div className="input-wrapper">
-        <input type="text" name="title" id="title" placeholder={"Item Name"} value={title || ""} onChange={handleChange} onBlur={handleBlur}/>
-        {touched && localError && <div className="error">{localError}</div>}
+        <input type="text" name="title" id="title" placeholder={"Item Name"} value={title || ""} onChange={handleChange} onBlur={onBlur}/>
+        {titleBlur && titleError && <div className="error">{titleError}</div>}
       </div>
     </li>
   )
@@ -117,7 +100,7 @@ const DueDate = ({ date, onChange }: DueDateInputProps) => {
   )
 }
 
-const Description = ({ description, onChange }: {description: string | undefined, onChange: (field: string, value: string) => void}) => {
+const Description = ({ description, onChange }: DescriptionInputProps) => {
   const handleDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange('description', event.target.value)
   }
@@ -125,45 +108,89 @@ const Description = ({ description, onChange }: {description: string | undefined
   return (
     <li>
       <label htmlFor="description">Description</label>
-      <textarea cols={50} name="description" rows={7} placeholder={description || "Description"} onChange={handleDescription}></textarea>
+      <textarea cols={50} name="description" rows={7} placeholder={"Description"} value={description || ""} onChange={handleDescription}></textarea>
     </li>
   )
 }
 
 const ModalForm = ({ onSubmit, todo, onComplete }: ModalFormProps) => {
-  const [newTodo, setNewTodo] = useState({...todo})
-  const date: DateParts = {'year': newTodo.year, 'month': newTodo.month, 'day': newTodo.day}
+  const [draftTodo, setdraftTodo] = useState({...todo})
+  const [titleError, setTitleError] = useState<string | null>(null)
+  const [titleBlur, setTitleBlur] = useState<boolean>(false)
+  const date: DateParts = {'year': draftTodo.year, 'month': draftTodo.month, 'day': draftTodo.day}
+  const isFormInvalid = !draftTodo.title?.trim() || titleError !== null
 
-  const handleChange = (property: TodoField, value: string | DateParts): void => {
-    if (property === "date") {
-      const dateValue = value as DateParts
-      setNewTodo({...newTodo, 'year': dateValue.year, 'month': dateValue.month, 'day': dateValue.day})
+  const getTitleError = (title: string | undefined): string | null => {
+    if (!title || title.trim().length < 3) {
+      return 'Title must be at least 3 characters long'
     } else {
-      setNewTodo({...newTodo, [property]: value})
+      return null
     }
   }
 
-  const onClick = (event, id) => {
-    event.preventDefault()
+  const handleChange = (property: TodoField, value: string | DateParts): void => {
+    if (property === 'title') {
+      const error = getTitleError(value as string)
+      setTitleError(error)
+    } 
+    
+    if (property === "date") {
+      const dateValue = value as DateParts
+      setdraftTodo({...draftTodo, 'year': dateValue.year, 'month': dateValue.month, 'day': dateValue.day})
+    } else {
+      setdraftTodo({...draftTodo, [property]: value})
+    }
+  }
+
+  const handleTitleBlur = () => {
+    setTitleBlur(true)
+    const error = getTitleError(draftTodo.title)
+    setTitleError(error)
+  }
+
+  const preCompleteCheck = (event: React.SyntheticEvent, id: number | undefined) => {
+    if (!id) return
+    const error = getTitleError(draftTodo.title)
+    setTitleError(error)
+
+    if (error) {
+      event.preventDefault()
+      setTitleBlur(true)
+      return
+    }
+    
     onComplete(id)
   }
 
+  const preSubmitCheck = (event: React.FormEvent<HTMLFormElement>) => {
+    const error = getTitleError(draftTodo.title)
+    setTitleError(error)
+
+    if (error) {
+      event.preventDefault()
+      setTitleBlur(true)
+      return
+    }
+
+    onSubmit(event, draftTodo)
+  }
+
   return (
-    <div className="modal" id="form_modal" style={{top: (window.scrollY + 200) + 'px'}}>
-      <form action="" method="post" onSubmit={(event) => onSubmit(event, newTodo)}>
+    <>
+      <form action="" method="post" onSubmit={(event) => preSubmitCheck(event)}>
       <fieldset>
         <ul>
-          <Title title={newTodo.title} onChange={handleChange}/>
+          <Title title={draftTodo.title} onChange={handleChange} onBlur={handleTitleBlur} titleError={titleError} titleBlur={titleBlur}/>
           <DueDate date={date} onChange={handleChange}/>
-          <Description description={newTodo.description} onChange={handleChange}/>
+          <Description description={draftTodo.description} onChange={handleChange}/>
           <li>
-            <input type="submit" value="Save" />
-            <button name="complete" onClick={(e) => onClick(e, newTodo.id)}>Mark As Complete</button>
+            <input type="submit" value="Save" className={isFormInvalid ? 'disabled-button' : ''}/>
+            <button type="button" name="complete"onClick={(e) => preCompleteCheck(e, draftTodo.id)} className={isFormInvalid || !draftTodo.id || draftTodo.completed ? 'disabled-button' : ''} disabled={!draftTodo.id || draftTodo.completed}>Mark As Complete</button>
           </li>
         </ul>
       </fieldset>
     </form>
-    </div>
+    </>
   )
 }
 
