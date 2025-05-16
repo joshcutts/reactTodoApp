@@ -1,4 +1,5 @@
 import { TodoTableProps, TodoItemProps } from "../types"
+import { formatDate } from "../utilities/utilties"
 
 const TodoItem = ({
   todo,
@@ -12,7 +13,8 @@ const TodoItem = ({
     }
   }
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = (event: React.SyntheticEvent) => {
+    event.stopPropagation()
     onDelete(todo.id)
   }
 
@@ -27,8 +29,8 @@ const TodoItem = ({
       <td className="list_item">
       <input type="checkbox" name={`item_${todo.id}`} id={`item_${todo.id}`} checked={todo.completed} readOnly/>
       <span className="check"></span>
-      <label htmlFor={`item_${todo.id}`} onClick={handleViewClick}>{todo.title} - {todo.dueDate}</label></td> 
-      <td className="delete" onClick={handleDeleteClick}><img src="images/trash.png" alt="Delete"/></td>
+      <label htmlFor={`item_${todo.id}`} onClick={handleViewClick}>{todo.title} - {formatDate(todo)}</label></td> 
+      <td className="delete" onClick={event => handleDeleteClick(event)}><img src="images/trash.png" alt="Delete"/></td>
     </tr>
     </>
   )

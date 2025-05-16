@@ -1,18 +1,17 @@
-import { Todo, FormattedTodo } from "./types"
-import { formatTodos, formatDate } from './utilities/utilties'
+import { Todo } from "./types"
 import axios from 'axios'
 
 
-export const getAllTodos = async (): Promise<FormattedTodo[]> => {
+export const getAllTodos = async (): Promise<Todo[]> => {
   const response = await axios.get('/api/todos')
-  return formatTodos(response.data)
+  return response.data
 }
 
 export const addTodo = async(newTodo: Todo) => {
   try {
     const response = await axios.post('/api/todos', newTodo)
-    const newFormattedTodo = {...response.data, dueDate: formatDate(response.data)}
-    return newFormattedTodo
+    // const newFormattedTodo = {...response.data, dueDate: formatDate(response.data)}
+    return response.data
   } catch (error: unknown) {
     console.error('Error creating todo: ', error)
   }
@@ -21,9 +20,9 @@ export const addTodo = async(newTodo: Todo) => {
 export const updateTodo = async(todo: Todo) => {
   try {
     const response = await axios.put(`/api/todos/${todo.id}`, todo)
-    const newFormattedTodo = {...response.data, dueDate: formatDate(response.data)}
-    return newFormattedTodo
+    return response.data
   } catch (error: unknown) {
+    console.log(todo)
     console.error('Error creating todo: ', error)
   }
 }
@@ -31,8 +30,8 @@ export const updateTodo = async(todo: Todo) => {
 export const toggleComplete = async (id: number, newStatus: boolean) => {
   try {
     const response = await axios.put(`/api/todos/${id}`, {completed: newStatus})
-    const newFormattedTodo = {...response.data, dueDate: formatDate(response.data)}
-    return newFormattedTodo
+    // const newFormattedTodo = {...response.data}
+    return response.data
   } catch (error: unknown) {
     console.error('Error creating todo: ', error)
   }
