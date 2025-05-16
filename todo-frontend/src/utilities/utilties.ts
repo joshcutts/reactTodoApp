@@ -1,4 +1,4 @@
-import { Todo, DateKey, FormattedTodo, dateKeyTodosProps, SelectionProps } from "../types"
+import { Todo, DateKey, dateKeyTodosProps, SelectionProps } from "../types"
 
 const definedDueDate = (year: string, month: string): boolean => {
   return (year !== '' && month !== '')
@@ -22,7 +22,7 @@ const todoExists = (id: number | null, todos: Todo[]) => {
   return todos.map(todo => todo.id).includes(Number(id))
 }
 
-const sortByDate = (dateKeysObj: dateKeyTodosProps) => {
+const groupByDate = (dateKeysObj: dateKeyTodosProps) => {
   return Object.entries(dateKeysObj).sort((a, b) => {
     if (b[0] === 'No Due Date') return 1;
     if (a[0] === 'No Due Date') return -1;
@@ -46,7 +46,7 @@ const generateDateKeyTodos = (todos: Todo[]): dateKeyTodosProps => {
     }
   })
 
-  return Object.fromEntries(sortByDate(dateKeysObj))
+  return Object.fromEntries(groupByDate(dateKeysObj))
 }
 
 const isCurrentSelection = (completedView: boolean, sidebarDate: string | null, selection: SelectionProps) => {
@@ -79,16 +79,44 @@ const filterTodosOnSelection = (selectionCompleted: boolean, selectionDate: stri
   return dateFilteredTodos
 }
 
-const sortByTodoId = (todos: FormattedTodo[]) => {
+const sortByTodoId = (todos: Todo[]) => {
   todos.sort((a, b) => a.id - b.id)
 }
 
-const sortByCompleted = (todos: FormattedTodo[]) => {
+const sortByDate = (todos: Todo[]) => {
+  todos.sort((a, b) => {
+    const aDate = formatDate(a)
+    const bDate = formatDate(b)
+
+    const aNoDate = aDate === 'No Due Date'
+    const bNoDate = bDate === 'No Due Date'
+
+    if (aNoDate && !bNoDate) return 1
+    if (!aNoDate && bNoDate) return -1
+    if (aNoDate && bNoDate) return 0
+    
+    if (a.year !== b.year) return Number(a.year) - Number(b.year)
+    return Number(a.month) - Number(b.month)
+  })
+}
+
+// const groupByDate = (dateKeysObj: dateKeyTodosProps) => {
+//   return Object.entries(dateKeysObj).sort((a, b) => {
+//     if (b[0] === 'No Due Date') return 1;
+//     if (a[0] === 'No Due Date') return -1;
+//     const [aMonth, aYear] = a[0].split('/').map(val => Number(val));
+//     const [bMonth, bYear] = b[0].split('/').map(val => Number(val));
+//     if (aYear !== bYear) return aYear - bYear;
+//     return aMonth - bMonth;
+//   })
+// }
+
+const sortByCompleted = (todos: Todo[]) => {
   const incompleteTodos = todos.filter(todo => todo.completed === false)
   const completedTodos = todos.filter(todo => todo.completed)
 
-  sortByTodoId(incompleteTodos)
-  sortByTodoId(completedTodos)
+  sortByDate(incompleteTodos)
+  sortByDate(completedTodos)
 
   return incompleteTodos.concat(completedTodos)
 }
