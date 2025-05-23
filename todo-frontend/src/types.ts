@@ -8,41 +8,13 @@ export interface Todo {
   description?: string;
 }
 
-export interface FormattedTodo {
-  id: number;
-  title: string;
-  dueDate: string,
-  completed: boolean;
-  description?: string;
-}
-
-export interface ModalProps {
-  displayModal: boolean;
-  handleDisplayModal: React.MouseEventHandler<HTMLLabelElement>;
-  setTodos: React.Dispatch<React.SetStateAction<FormattedTodo[]>>;
-  todos: FormattedTodo[]
-}
-
 export interface Style {
   display: string,
   top?: string
 }
 
-export interface AcutalModalProps {
-  handleDisplayModal: React.MouseEventHandler<HTMLLabelElement>;
-  setTodos: React.Dispatch<React.SetStateAction<FormattedTodo[]>>;
-  todos: FormattedTodo[];
-  style: Style;
-}
-
-export interface ModalFormProps {
-  handleDisplayModal: React.MouseEventHandler<HTMLLabelElement>;
-  setTodos: React.Dispatch<React.SetStateAction<FormattedTodo[]>>;
-  todos: FormattedTodo[];
-}
-
 export interface DateKey {
-  [key: string]: FormattedTodo[];
+  [key: string]: Todo[];
 }
 
 export interface SelectionProps {
@@ -58,38 +30,31 @@ export interface TitleObjProps {
 export type OnSubmitProps = (
   event: React.FormEvent<HTMLFormElement>,
   newTodo: Todo,
-  resetForm: () => void,
 ) => void
 
 export interface SidebarProps {
-  todos: FormattedTodo[];
-  updateSelection: (selection: SelectionProps) => void;
+  todos: Todo[];
+  onSelect: (selection: SelectionProps) => void;
   currentSelection: SelectionProps
 }
 
 export interface TodoManagerProps {
-  todos: FormattedTodo[],
-  onToggleCompleted: (id: number) => Promise<void>,
-  onDelete: (id: number) => Promise<void>,
-  titleInfo: TitleObjProps,
-  onComplete: (id: number) => Promise<void>,
-  handleDisplayModal: () => void,
-  onView: (id: number) => void,
-  displayModal: boolean,
-  todo: FormattedTodo | null,
-  onSubmit: OnSubmitProps,
-  toggleSidebar: () => void
+  todos: Todo[];
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  onSidebarToggleClick: () => void;
+  currentSelection: SelectionProps;
+  resetSelection: () => void;
 }
 
 export interface TodoTableProps {
-  todos: FormattedTodo[],
+  todos: Todo[],
   onView: (id: number) => void,
   onToggleCompleted: (id: number) => Promise<void>,
   onDelete: (id: number) => Promise<void>,
 }
 
 export interface TodoItemProps {
-  todo: FormattedTodo;
+  todo: Todo;
   onView: (id: number) => void,
   onToggleCompleted: (id: number) => Promise<void>,
   onDelete: (id: number) => Promise<void>,
@@ -97,14 +62,14 @@ export interface TodoItemProps {
 
 export interface SidebarTodoGroupProps {
   title: string;
-  todos: FormattedTodo[];
+  todos: Todo[];
   isCompletedView: boolean;
   currentSelection: SelectionProps;
-  updateSelection: (selection: SelectionProps) => void
+  onSelect: (selection: SelectionProps) => void
 }
 
 export interface dateKeyTodosProps {
-  [key: string]: FormattedTodo[]
+  [key: string]: Todo[]
 }
 
 interface TitleInfoProps {
@@ -114,5 +79,47 @@ interface TitleInfoProps {
 
 export interface TitleProps {
   titleInfo: TitleInfoProps;
-  toggleSidebar: () => void;
+  onClick: () => void;
+}
+
+export interface DateParts {
+  year: string | undefined;
+  month: string | undefined;
+  day: string | undefined;
+}
+
+export type TodoField = 'title' | 'description' | 'date' | 'year' | 'month' | 'day';
+
+export interface ModalProps {
+  displayModal: boolean;
+  onClose: () => void;
+  todo: Todo | null;
+  onSubmit: OnSubmitProps;
+  onComplete: (id: number) => Promise<void>;
+}
+
+export interface ModalFormProps {
+  onSubmit: OnSubmitProps;
+  todo: Todo | null;
+  onComplete: (id: number) => Promise<void>;
+}
+
+type onChangeProp = (property: TodoField, value: string | DateParts) => void
+
+export interface TitleInputProps {
+  title: string | undefined;
+  onChange: onChangeProp;
+  onBlur: () => void;
+  titleError: string | null;
+  titleBlur: boolean;
+}
+
+export interface DueDateInputProps {
+  date: DateParts;
+  onChange: onChangeProp;
+}
+
+export interface DescriptionInputProps {
+  description: string | undefined;
+  onChange: onChangeProp
 }

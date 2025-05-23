@@ -1,12 +1,9 @@
 import { TitleProps } from "../types"
 
-const Title = ({
-  titleInfo,
-  toggleSidebar
-}: TitleProps) => {
+const Title = ({ titleInfo, onClick }: TitleProps) => {
   return (
     <header>
-      <label id="sidebar_toggle" onClick={toggleSidebar}>
+      <label id="sidebar_toggle" onClick={onClick}>
         <img src="images/hamburger.png" alt="Toggle Sidebar" />
       </label>
       <dl>

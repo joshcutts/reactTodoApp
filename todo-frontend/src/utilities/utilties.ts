@@ -1,4 +1,4 @@
-import { Todo, DateKey, FormattedTodo, dateKeyTodosProps, SelectionProps } from "../types"
+import { Todo, DateKey, dateKeyTodosProps, SelectionProps } from "../types"
 
 const definedDueDate = (year: string, month: string): boolean => {
   return (year !== '' && month !== '')
@@ -18,35 +18,35 @@ const formatTodos = (todos: Todo[]) => {
   })
 }
 
-const todoExists = (todo: Todo, todos: FormattedTodo[]) => {
-  return todos.map(todo => todo.id).includes(Number(todo.id))
+const todoExists = (id: number | null, todos: Todo[]) => {
+  return todos.map(todo => todo.id).includes(Number(id))
 }
 
-const sortByDate = (dateKeysObj: dateKeyTodosProps) => {
+const groupByDate = (dateKeysObj: dateKeyTodosProps) => {
   return Object.entries(dateKeysObj).sort((a, b) => {
     if (b[0] === 'No Due Date') return 1;
     if (a[0] === 'No Due Date') return -1;
     const [aMonth, aYear] = a[0].split('/').map(val => Number(val));
     const [bMonth, bYear] = b[0].split('/').map(val => Number(val));
-    if (bMonth)
     if (aYear !== bYear) return aYear - bYear;
     return aMonth - bMonth;
   })
 }
 
-const generateDateKeyTodos = (todos: FormattedTodo[]): dateKeyTodosProps => {
+const generateDateKeyTodos = (todos: Todo[]): dateKeyTodosProps => {
   if (todos.length === 0) return {}
   const dateKeysObj: DateKey = {}
 
   todos.forEach(todo => {
-    if (Object.keys(dateKeysObj).includes(todo?.dueDate)) {
-      dateKeysObj[todo.dueDate].push(todo)
+    const dueDate = formatDate(todo)
+    if (Object.keys(dateKeysObj).includes(dueDate)) {
+      dateKeysObj[dueDate].push(todo)
     } else {
-      dateKeysObj[todo.dueDate] = [todo]
+      dateKeysObj[dueDate] = [todo]
     }
   })
 
-  return Object.fromEntries(sortByDate(dateKeysObj))
+  return Object.fromEntries(groupByDate(dateKeysObj))
 }
 
 const isCurrentSelection = (completedView: boolean, sidebarDate: string | null, selection: SelectionProps) => {
@@ -57,7 +57,7 @@ const isCurrentSelection = (completedView: boolean, sidebarDate: string | null, 
   }
 }
 
-const filterOnCompleted = (selectionCompleted: boolean, todos: FormattedTodo[]) => {
+const filterOnCompleted = (selectionCompleted: boolean, todos: Todo[]) => {
   if (selectionCompleted) {
     return todos.filter(todo => todo.completed === true)
   } else {
@@ -65,32 +65,67 @@ const filterOnCompleted = (selectionCompleted: boolean, todos: FormattedTodo[]) 
   }
 }
 
-const filterOnDate = (selectionDate: string | null, todos: FormattedTodo[]) => {
+const filterOnDate = (selectionDate: string | null, todos: Todo[]) => {
   if (selectionDate === null) {
     return todos
   } else {
-    return todos.filter(todo => todo.dueDate === selectionDate)
+    return todos.filter(todo => formatDate(todo) === selectionDate)
   }
 }
 
-const filterTodosOnSelection = (selectionCompleted: boolean, selectionDate: string | null, todos: FormattedTodo[]) => {
+const filterTodosOnSelection = (selectionCompleted: boolean, selectionDate: string | null, todos: Todo[]) => {
   const completeFilteredTodos = filterOnCompleted(selectionCompleted, todos)
   const dateFilteredTodos = filterOnDate(selectionDate, completeFilteredTodos)
   return dateFilteredTodos
 }
 
-const sortByTodoId = (todos: FormattedTodo[]) => {
+const sortByTodoId = (todos: Todo[]) => {
   todos.sort((a, b) => a.id - b.id)
 }
 
-const sortByCompleted = (todos: FormattedTodo[]) => {
+const sortByDate = (todos: Todo[]) => {
+  todos.sort((a, b) => {
+    const aDate = formatDate(a)
+    const bDate = formatDate(b)
+
+    const aNoDate = aDate === 'No Due Date'
+    const bNoDate = bDate === 'No Due Date'
+
+    if (aNoDate && !bNoDate) return 1
+    if (!aNoDate && bNoDate) return -1
+    if (aNoDate && bNoDate) return 0
+    
+    if (a.year !== b.year) return Number(a.year) - Number(b.year)
+    return Number(a.month) - Number(b.month)
+  })
+}
+
+// const groupByDate = (dateKeysObj: dateKeyTodosProps) => {
+//   return Object.entries(dateKeysObj).sort((a, b) => {
+//     if (b[0] === 'No Due Date') return 1;
+//     if (a[0] === 'No Due Date') return -1;
+//     const [aMonth, aYear] = a[0].split('/').map(val => Number(val));
+//     const [bMonth, bYear] = b[0].split('/').map(val => Number(val));
+//     if (aYear !== bYear) return aYear - bYear;
+//     return aMonth - bMonth;
+//   })
+// }
+
+const sortByCompleted = (todos: Todo[]) => {
   const incompleteTodos = todos.filter(todo => todo.completed === false)
   const completedTodos = todos.filter(todo => todo.completed)
 
-  sortByTodoId(incompleteTodos)
-  sortByTodoId(completedTodos)
+  sortByDate(incompleteTodos)
+  sortByDate(completedTodos)
 
   return incompleteTodos.concat(completedTodos)
+}
+
+const generateSortedSelectedTodos = (currentSelection: SelectionProps, todos: Todo[]) => {
+  const {completed, date} = currentSelection
+  const filteredTodos = filterTodosOnSelection(completed, date, todos)
+  const sortedTodos = sortByCompleted(filteredTodos)
+  return sortedTodos
 }
 
 const getTitle = ({ completed, date }: { completed: boolean, date: string | null }) => {
@@ -103,4 +138,4 @@ const getTitle = ({ completed, date }: { completed: boolean, date: string | null
   }
 }
 
-export { formatTodos, formatDate, todoExists, generateDateKeyTodos, isCurrentSelection, filterTodosOnSelection, sortByCompleted, getTitle }
+export { formatTodos, formatDate, todoExists, generateDateKeyTodos, isCurrentSelection, generateSortedSelectedTodos, getTitle }

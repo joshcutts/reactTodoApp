@@ -7,12 +7,12 @@ const SidebarTodoGroup = ({
   todos,
   isCompletedView,
   currentSelection,
-  updateSelection
+  onSelect
 }: SidebarTodoGroupProps) => {
   const dateKeyTodos: dateKeyTodosProps = generateDateKeyTodos(todos)
 
   const handleSidebarClick = (date: string | null) => {
-    updateSelection({completed: isCompletedView, date})
+    onSelect({completed: isCompletedView, date})
   }
 
   const sectionClass = isCompletedView ? 'completed' : ''
@@ -30,12 +30,12 @@ const SidebarTodoGroup = ({
           className={isCurrentSelection(isCompletedView, null, currentSelection)}
         >
         <dl onClick={() => handleSidebarClick(null)}>
-          <dt>All Todos</dt>
+          <dt>{title}</dt>
             <dd>{todos.length}</dd>
           </dl>
       </header>
       </div>
-      <article id="all_lists">
+      <article id={isCompletedView ? "completed_lists" : "all_lists"}>
         {Object.entries(dateKeyTodos).map(([date, todosArr]) => {
           return (
             <dl key={date} data-title={`${date}`} data-total={`${todosArr.length}`} onClick={() => handleSidebarClick(date)} className={isCurrentSelection(isCompletedView, date, currentSelection)}>
@@ -51,7 +51,7 @@ const SidebarTodoGroup = ({
 
 const Sidebar = ({
   todos,
-  updateSelection,
+  onSelect,
   currentSelection,
 }: SidebarProps) => {
   const completedTodos = todos.filter(todo => todo?.completed)
@@ -63,14 +63,14 @@ const Sidebar = ({
         todos={todos}
         isCompletedView={false}
         currentSelection={currentSelection}
-        updateSelection={updateSelection}
+        onSelect={onSelect}
       />
       <SidebarTodoGroup 
         title="Completed"
         todos={completedTodos}
         isCompletedView={true}
         currentSelection={currentSelection}
-        updateSelection={updateSelection}
+        onSelect={onSelect}
       />
     </div>
   )
